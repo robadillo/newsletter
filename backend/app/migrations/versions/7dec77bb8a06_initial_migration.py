@@ -8,6 +8,7 @@ Create Date: 2024-12-08 19:51:30.874539
 from alembic import op
 import sqlalchemy as sa
 from datetime import datetime
+import uuid
 
 # Revisión ID y downgrader/upgrade
 revision = 'XXXXXXXXXXXX'
@@ -29,22 +30,25 @@ def upgrade():
 
     op.create_table(
         'newsletter',
-        sa.Column('id', sa.String, primary_key=True, index=True),
-        sa.Column('key', sa.String, nullable=False),
-        sa.Column('content', sa.String, nullable=False),
-        sa.Column('file_type', sa.LargeBinary, nullable=False),
+        sa.Column('id', sa.String(), primary_key=True, index=True),
+        sa.Column('key', sa.String(), nullable=False),
+        sa.Column('content', sa.String(), nullable=False),
+        sa.Column('file', sa.LargeBinary, nullable=False),
+        sa.Column('file_extension', sa.String(), nullable=False),
         sa.Column('created_at', sa.DateTime(), nullable=False, server_default=sa.text("CURRENT_TIMESTAMP"))
     )
 
-    # Insertar datos por defecto
+    newsletter_id = uuid.uuid4()
+    recipient_id = uuid.uuid4()
+
     # Insertar newsletter por defecto
     op.execute(
-        "INSERT INTO newsletter (key, content, file_type) VALUES ('default', 'Welcome to our service!', X'00')"
+        f"INSERT INTO newsletter (id, key, content, file, file_extension) VALUES ('{newsletter_id}', 'default', 'Welcome to our service!', X'00', 'pdf')"
     )
 
     # Insertar usuario por defecto
     op.execute(
-        "INSERT INTO recipients (email, name, newsletter_key) VALUES ('onigirimex@gmail.com', 'Rodrigo Default', 'default')"
+        f"INSERT INTO recipients (id, email, name, newsletter_key) VALUES ('{recipient_id}', 'onigirimex@gmail.com', 'Rodrigo Default', 'default')"
     )
 
 def downgrade():

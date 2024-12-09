@@ -3,17 +3,18 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
-from sqlalchemy import text
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Recipient
 
 router = APIRouter(prefix="/recipients", tags=["Recipients"])
 
+# TODO: agregar documentación de cada endpoint
+
 class RecipientCreate(BaseModel):
     email: EmailStr
     name: Optional[str] = None
-    newsletter_key: Optional[str] = "default"  # TODO: Revisar si debe ir por id o por nombre para que sea más de entender
+    newsletter_key: Optional[str] = "default"
 
 class RecipientBulkCreate(BaseModel):
     recipients: List[RecipientCreate]
@@ -35,7 +36,6 @@ def list_recipients(db: Session = Depends(get_db)):
 
 @router.post("/", response_model=dict)
 def add_recipient(recipient: RecipientCreate, db: Session = Depends(get_db)):
-    # TODO: Verificar si ya existe el destinatario con ese email y newsletter_id
     existing = db.query(Recipient).filter(
         Recipient.email == recipient.email,
         Recipient.newsletter_key == recipient.newsletter_key
@@ -49,10 +49,15 @@ def add_recipient(recipient: RecipientCreate, db: Session = Depends(get_db)):
         name=recipient.name,
         newsletter_key=recipient.newsletter_key
     )
-    db.add(new_recipient)
-    db.commit()
-    db.refresh(new_recipient)
-    return {"message": f"Recipient '{new_recipient.email}' added successfully"}
+
+    try:
+        db.add(new_recipient)
+        db.commit()
+        db.refresh(new_recipient)
+        return {"message": f"Recipient '{new_recipient.email}' added successfully"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error adding recipient: {str(e)}")
 
 @router.post("/bulk", response_model=dict)
 def add_recipients_bulk(data: RecipientBulkCreate, db: Session = Depends(get_db)):

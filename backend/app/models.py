@@ -13,11 +13,12 @@ class Recipient(Base):
     is_subscribed = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.now)
 
-class Newsletter(Base):  # Debe heredar de Base, no de BaseModel
+class Newsletter(Base):
     __tablename__ = "newsletter"
 
     id = Column(String, primary_key=True, index=True, default=lambda: str(uuid.uuid4())) 
     key = Column(String, index=True, nullable=False, unique=True)
     content = Column(String, nullable=False)
-    file_type = Column(LargeBinary, nullable=False)
+    file = Column(LargeBinary, nullable=False)
+    file_extension = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.now)
