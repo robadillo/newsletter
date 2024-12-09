@@ -1,0 +1,32 @@
+*__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Envs
+env/
+venv/
+.venv/
+
+# Local Database Files
+*.db
+
+# Temporal files
+*.log
+*.cache
+*.bak
+
+.vscode/
+.idea/
+
+.DS_Store
+Thumbs.db
+
+.env
+
+# Directorios de test o cache de test
+.pytest_cache/
+
+# Archivos generados por coverage u otras herramientas
+htmlcov/
+coverage.xml
