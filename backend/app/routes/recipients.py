@@ -54,17 +54,38 @@ def add_recipient(recipient: RecipientCreate, db: Session = Depends(get_db)):
     db.refresh(new_recipient)
     return {"message": f"Recipient '{new_recipient.email}' added successfully"}
 
+@router.post("/bulk", response_model=dict)
+def add_recipients_bulk(data: RecipientBulkCreate, db: Session = Depends(get_db)):
+    added_count = 0
+    for r in data.recipients:
+        recipient_exists = db.query(Recipient).filter(
+            Recipient.email == r.email,
+            Recipient.newsletter_key == r.newsletter_key
+        ).first()
+        if not recipient_exists:
+            new_r = Recipient(
+                email=r.email,
+                name=r.name,
+                newsletter_key=r.newsletter_key,
+            )
+            db.add(new_r)
+            added_count += 1
 
-'''
-@router.post("/add")
-async def add_recipient(email: str, newsletter_type: str = "general", db: AsyncSession = Depends(get_db)):
-    recipient = Recipient(email=email, newsletter_type=newsletter_type)
-    db.add(recipient)
-    await db.commit()
-    return {"message": f"Recipient '{email}' added successfully"}
+    db.commit()
+    return {"message": f"Added {added_count} recipients successfully"}
 
-@router.get("/")
-async def list_recipients(db: AsyncSession = Depends(get_db)):
-    recipients = await db.execute(text("SELECT * FROM recipients"))
-    return recipients.fetchall()
-'''
+@router.put("/unsubscribe", response_model=dict)
+def unsubscribe(email: EmailStr, newsletter_key: str, db: Session = Depends(get_db)):
+    recipient = db.query(Recipient).filter(
+        Recipient.email == email,
+        Recipient.newsletter_key == newsletter_key
+    ).first()
+
+    if not recipient:
+        raise HTTPException(status_code=404, detail="Recipient not found for this newsletter.")
+    
+    recipient.is_subscribed = False
+    db.commit()
+    db.refresh(recipient)
+
+    return {"message": f"Recipient '{recipient.email}' unsubscribed from newsletter {newsletter_key}."}
