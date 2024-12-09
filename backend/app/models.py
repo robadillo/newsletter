@@ -1,22 +1,23 @@
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Boolean, LargeBinary, DateTime
-from app.database import Base
+from app.database import Base # TODO: ESTO CAUSA ERROR AL CORRER LA MIGRACION
+import uuid
 
 class Recipient(Base):
     __tablename__ = "recipients"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(String, primary_key=True, index=True, default=lambda: str(uuid.uuid4()))
     email = Column(String, unique=True, nullable=False)
     name = Column(String, nullable=False)
-    newsletter_id = Column(Integer, nullable=False, default=1)
+    newsletter_key = Column(String, nullable=False, default="default")
     is_subscribed = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.now)
 
 class Newsletter(Base):  # Debe heredar de Base, no de BaseModel
     __tablename__ = "newsletter"
 
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, nullable=False)
+    id = Column(String, primary_key=True, index=True, default=lambda: str(uuid.uuid4())) 
+    key = Column(String, index=True, nullable=False, unique=True)
     content = Column(String, nullable=False)
     file_type = Column(LargeBinary, nullable=False)
     created_at = Column(DateTime, default=datetime.now)
