@@ -9,7 +9,7 @@ from alembic import context
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from database import *
+from app.database import *
 from models import *
 
 # this is the Alembic Config object, which provides

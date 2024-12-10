@@ -3,3 +3,5 @@ uvicorn
 sqlalchemy
 email-validator
 pydantic
+alembic
+jinja2

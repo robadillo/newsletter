@@ -11,13 +11,13 @@ const schema = yup.object().shape({
   file: yup
     .mixed()
     .required('Archivo es requerido')
-    .test('fileType', 'Solo se permiten PDF o PNG', value => {
-      return value && (value.type === 'application/pdf' || value.type === 'image/png');
-    }),
+//    .test('fileType', 'Solo se permiten PDF o PNG', value => {
+//      return value && (value.type === 'application/pdf' || value.type === 'image/png');
+//    }),
 });
 
 const NewsletterUpload = () => {
-  const { register, handleSubmit, errors, reset } = useForm({
+  const { register, handleSubmit, formState: { errors }, reset } = useForm({
     resolver: yupResolver(schema),
   });
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ const NewsletterUpload = () => {
           <label htmlFor="key">Key</label>
           <input
             name="key"
-            ref={register}
+            {...register('key')}
             className={`form-control ${errors.key ? 'is-invalid' : ''}`}
           />
           {errors.key && <div className="invalid-feedback">{errors.key.message}</div>}
@@ -61,7 +61,7 @@ const NewsletterUpload = () => {
           <label htmlFor="content">Contenido</label>
           <textarea
             name="content"
-            ref={register}
+            {...register('content')}
             className={`form-control ${errors.content ? 'is-invalid' : ''}`}
             rows="4"
           ></textarea>
@@ -72,7 +72,7 @@ const NewsletterUpload = () => {
           <input
             type="file"
             name="file"
-            ref={register}
+            {...register('file')}
             className={`form-control-file ${errors.file ? 'is-invalid' : ''}`}
             accept=".pdf, .png"
           />
