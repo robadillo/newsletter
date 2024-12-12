@@ -10,11 +10,12 @@ services:
       - "8000:8000"
     volumes:
       - ./backend/app:/app/app
+      - ./backend/app/test.db:/app/app/test.db 
       - ./backend/requirements.txt:/app/requirements.txt
       - backend_data:/app/data
     environment:
       - PYTHONUNBUFFERED=1
-      - DATABASE_URL=sqlite:///./app/test.db
+      - DATABASE_URL=sqlite:///app/app/test.db  # Ruta correcta del archivo test.db dentro del contenedor
     networks:
       - app-network
 
