@@ -5,3 +5,4 @@ email-validator
 pydantic
 alembic
 jinja2
+python-multipart
