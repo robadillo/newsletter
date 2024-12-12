@@ -8,9 +8,6 @@ env/
 venv/
 .venv/
 
-# Local Database Files
-*.db
-
 # Temporal files
 *.log
 *.cache

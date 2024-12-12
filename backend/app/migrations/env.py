@@ -9,7 +9,7 @@ from alembic import context
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from app.database import *
+from app.database import * # TODO: ESTO CAUSA ERROR AL CORRER LA MIGRACION
 from models import *
 
 # this is the Alembic Config object, which provides
